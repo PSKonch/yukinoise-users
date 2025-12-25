@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     @property
     def database_url(self) -> str:
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
-    
+
     RABBITMQ_HOST: str = "localhost"
     RABBITMQ_PORT: int = 5672
     RABBITMQ_USER: str = "guest"
@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     @property
     def rabbitmq_url(self) -> str:
         return f"amqp://{self.RABBITMQ_USER}:{self.RABBITMQ_PASSWORD}@{self.RABBITMQ_HOST}:{self.RABBITMQ_PORT}/"
-    
+
     S3_ENDPOINT_URL: str = "http://localhost:9000"
     S3_ACCESS_KEY: str = "access_key"
     S3_SECRET_KEY: str = "secret_key"
@@ -34,8 +34,9 @@ class Settings(BaseSettings):
     @property
     def redis_url(self) -> str:
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
-    
-    model_config = SettingsConfigDict(env_file=".env")    
+
+    model_config = SettingsConfigDict(env_file=".env")
+
 
 settings = Settings()
 
@@ -45,4 +46,3 @@ keycloak_settings = KeycloakSettings(
     client_id="yukinoise-client",
     client_secret="your-client-secret",
 )
-
