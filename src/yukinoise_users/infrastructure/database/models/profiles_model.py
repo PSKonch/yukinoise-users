@@ -1,6 +1,6 @@
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy.dialects.postgresql import TSVECTOR
-from sqlalchemy import UUID, ForeignKey, Index, ARRAY, func
+from sqlalchemy import UUID, ForeignKey, Index, ARRAY, func, String
 from sqlalchemy.dialects.postgresql import JSONB
 
 from infrastructure.database.connection import Base
@@ -25,9 +25,9 @@ class ProfileORM(Base):
     banner_url: Mapped[str | None] = mapped_column(nullable=True)
     location: Mapped[str | None] = mapped_column(nullable=True)
     social_links: Mapped[dict[str, str] | None] = mapped_column(JSONB, nullable=True) 
-    preferred_genres: Mapped[list[str] | None] = mapped_column(ARRAY(str), nullable=True) 
+    preferred_genres: Mapped[list[str] | None] = mapped_column(ARRAY(String), nullable=True) 
     contact_email: Mapped[str | None] = mapped_column(nullable=True)
-    tags: Mapped[list[str] | None] = mapped_column(ARRAY(str), nullable=True)
+    tags: Mapped[list[str] | None] = mapped_column(ARRAY(String), nullable=True)
     monthly_listeners: Mapped[int | None] = mapped_column(nullable=True)
     followers_count: Mapped[int] = mapped_column(default=0, nullable=False)
     following_count: Mapped[int] = mapped_column(default=0, nullable=False)  
