@@ -7,12 +7,12 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from infrastructure.database.connection import Base
-from infrastructure.database.connection import async_engine
-from infrastructure.database.models.users_model import UserORM  # noqa: F401
-from infrastructure.database.models.profiles_model import ProfileORM  # noqa: F401
-from infrastructure.database.models.user_setting_model import UserSettingsORM  # noqa: F401
-from infrastructure.database.models.user_audit_logs import UserAuditLogORM  # noqa: F401
+from yukinoise_users.infrastructure.database.connection import Base
+from yukinoise_users.infrastructure.database.connection import async_engine
+from yukinoise_users.infrastructure.database.models.users_model import UserORM  # noqa: F401
+from yukinoise_users.infrastructure.database.models.profiles_model import ProfileORM  # noqa: F401
+from yukinoise_users.infrastructure.database.models.user_settings_model import UserSettingsORM  # noqa: F401
+from yukinoise_users.infrastructure.database.models.user_audit_logs import UserAuditLogORM  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

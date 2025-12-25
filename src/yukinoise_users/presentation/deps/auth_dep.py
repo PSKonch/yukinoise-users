@@ -20,6 +20,5 @@ UserRole = Annotated[Principal, Depends(require_realm_role("user"))]
 
 # Multi-role dependency
 AdminOrModerator = Annotated[
-    Principal,
-    Depends(require_any_realm_role(["admin", "moderator"]))
+    Principal, Depends(require_any_realm_role(["admin", "moderator"]))
 ]

@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
-from core.conf import settings
+from yukinoise_users.core.conf import settings
 
 async_engine = create_async_engine(
     settings.database_url,
@@ -12,6 +12,7 @@ async_session_factory = async_sessionmaker(
     class_=AsyncSession,
     expire_on_commit=False,
 )
+
 
 class Base(DeclarativeBase):
     pass

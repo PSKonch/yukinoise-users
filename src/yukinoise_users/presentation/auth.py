@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from yukinoise_auth import init_auth, KeycloakAuthMiddleware
 
-from core.conf import keycloak_settings
+from yukinoise_users.core.conf import keycloak_settings
 
 
 def setup_auth(app: FastAPI) -> None:
