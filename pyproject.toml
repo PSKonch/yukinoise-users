@@ -46,5 +46,5 @@ show_error_codes = true
 
 [dependency-groups]
 dev = [
-    "mypy (==1.19.1)"
+    "mypy (>=1.19.1,<2.0.0)"
 ]

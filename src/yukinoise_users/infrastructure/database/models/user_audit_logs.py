@@ -26,7 +26,7 @@ class UserAuditLogORM(Base):
         Index("idx_user_audit_logs_action", "action"),
     )
 
-    id: Mapped[UUID] = mapped_column(primary_key=True)
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=func.gen_random_uuid())
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.users.id"), nullable=False)
     action: Mapped[UserAuditAction] = mapped_column(nullable=False)
     changed_by: Mapped[UserChangedBy] = mapped_column(nullable=False)

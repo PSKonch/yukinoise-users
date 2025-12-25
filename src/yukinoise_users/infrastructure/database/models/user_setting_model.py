@@ -1,6 +1,6 @@
 from enum import StrEnum
 
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import UUID, ForeignKey, func
 from sqlalchemy.dialects.postgresql import JSONB
 
@@ -13,7 +13,7 @@ class UserPlaybackQuality(StrEnum):
     LOSSLESS = "lossless"
 
 
-class UserSettingORM(Base):
+class UserSettingsORM(Base):
     __tablename__ = "user_settings"
     __table_args__ = {"schema": "users"}
 
@@ -25,6 +25,8 @@ class UserSettingORM(Base):
     notifications_enabled: Mapped[bool] = mapped_column(default=True, nullable=False)
     autoplay_enabled: Mapped[bool] = mapped_column(default=True, nullable=False)
     data_consent: Mapped[bool] = mapped_column(default=False, nullable=False) 
-    privacy_settings: Mapped[dict[str, bool]] = mapped_column(JSONB)
+    privacy_settings: Mapped[dict[str, bool]] = mapped_column(JSONB, nullable=True)
     
     updated_at: Mapped[int] = mapped_column(nullable=False, server_default=func.extract('epoch', func.now()), onupdate=func.extract('epoch', func.now()))
+
+    user = relationship("UserORM", back_populates="settings")
