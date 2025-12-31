@@ -1,7 +1,7 @@
 from typing import Any, Sequence
 from uuid import UUID
 
-from sqlalchemy import select, update, func
+from sqlalchemy import select, update, insert, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from yukinoise_users.infrastructure.database.models.profiles_model import ProfileORM
@@ -14,10 +14,13 @@ class ProfilesRepository(BaseRepository):
         self.model = ProfileORM
 
     async def create(self, user_id: UUID, **profile_data: Any) -> ProfileORM:
-        profile = ProfileORM(user_id=user_id, **profile_data)
-        self.session.add(profile)
-        await self.session.flush()
-        return profile
+        stmt = (
+            insert(ProfileORM)
+            .values(user_id=user_id, **profile_data)
+            .returning(ProfileORM)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one()
 
     async def get_by_user_id(self, user_id: UUID) -> ProfileORM | None:
         query = select(ProfileORM).where(
