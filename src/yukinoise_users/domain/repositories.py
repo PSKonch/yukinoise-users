@@ -194,6 +194,6 @@ class OutBoxRepository(Protocol):
 
     async def increment_retry_count(self, event_id: UUID) -> None:
         ...
-    
+
     async def delete_event(self, event_id: UUID, older_than: int) -> None:
         ...

@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from uuid import UUID
+from typing import Any
 
 from yukinoise_users.domain.value_objects import (
     UserStatus,
@@ -73,7 +74,7 @@ class OutBoxEvent:
     id: UUID
     event_type: str
     created_at: int
-    payload: dict[str, str] = field(default_factory=dict)
+    payload: dict[str, Any] = field(default_factory=dict)
     updated_at: int | None = None
     status: OutBoxStatus = OutBoxStatus.PENDING
     retry_count: int = 0
