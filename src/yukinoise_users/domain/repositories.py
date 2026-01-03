@@ -1,7 +1,7 @@
 from typing import Protocol, Sequence, Any
 from uuid import UUID
 
-from yukinoise_users.domain.models import User, Profile, UserSettings, UserAuditLog
+from yukinoise_users.domain.models import User, Profile, UserSettings, UserAuditLog, OutBoxEvent
 from yukinoise_users.domain.value_objects import (
     UserStatus,
     UserAuditAction,
@@ -176,4 +176,24 @@ class UserAuditLogsRepository(Protocol):
         ...
 
     async def list_for_user(self, user_id: UUID, limit: int = 100) -> Sequence[UserAuditLog]:
+        ...
+
+
+class OutBoxRepository(Protocol):
+    async def create_event(self, event_type: str, payload: dict[str, Any]) -> None:
+        ...
+
+    async def get_pending_events(self, limit: int = 100) -> Sequence["OutBoxEvent"]:
+        ...
+
+    async def mark_event_sent(self, event_id: UUID) -> None:
+        ...
+
+    async def mark_event_failed(self, event_id: UUID, error: str) -> None:
+        ...
+
+    async def increment_retry_count(self, event_id: UUID) -> None:
+        ...
+    
+    async def delete_event(self, event_id: UUID, older_than: int) -> None:
         ...

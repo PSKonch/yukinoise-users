@@ -26,3 +26,9 @@ class UserChangedBy(StrEnum):
     USER = "user"
     ADMIN = "admin"
     SYSTEM = "system"
+
+
+class OutBoxStatus(StrEnum):
+    PENDING = "pending"
+    SENT = "sent"
+    FAILED = "failed"
