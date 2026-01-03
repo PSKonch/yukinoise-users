@@ -5,7 +5,9 @@ from sqlalchemy import select, update, insert, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from yukinoise_users.infrastructure.database.models.profiles_model import ProfileORM
-from yukinoise_users.infrastructure.database.repositories.base_repo import BaseRepository
+from yukinoise_users.infrastructure.database.repositories.base_repo import (
+    BaseRepository,
+)
 
 
 class ProfilesRepository(BaseRepository):
@@ -48,7 +50,9 @@ class ProfilesRepository(BaseRepository):
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
-    async def get_by_display_name_ilike(self, pattern: str, limit: int = 100) -> Sequence[ProfileORM]:
+    async def get_by_display_name_ilike(
+        self, pattern: str, limit: int = 100
+    ) -> Sequence[ProfileORM]:
         query = (
             select(ProfileORM)
             .where(
@@ -61,14 +65,20 @@ class ProfilesRepository(BaseRepository):
         return result.scalars().all()  # type: ignore[no-any-return]
 
     async def exists_display_name(self, display_name: str) -> bool:
-        query = select(func.count()).select_from(ProfileORM).where(
-            ProfileORM.display_name == display_name,
-            ProfileORM.deleted_at.is_(None),
+        query = (
+            select(func.count())
+            .select_from(ProfileORM)
+            .where(
+                ProfileORM.display_name == display_name,
+                ProfileORM.deleted_at.is_(None),
+            )
         )
         result = await self.session.execute(query)
         return (result.scalar() or 0) > 0
 
-    async def search_fulltext(self, query_text: str, limit: int = 100) -> Sequence[ProfileORM]:
+    async def search_fulltext(
+        self, query_text: str, limit: int = 100
+    ) -> Sequence[ProfileORM]:
         query = (
             select(ProfileORM)
             .where(
@@ -80,7 +90,9 @@ class ProfilesRepository(BaseRepository):
         result = await self.session.execute(query)
         return result.scalars().all()  # type: ignore[no-any-return]
 
-    async def get_by_genres(self, genres: list[str], limit: int = 100) -> Sequence[ProfileORM]:
+    async def get_by_genres(
+        self, genres: list[str], limit: int = 100
+    ) -> Sequence[ProfileORM]:
         query = (
             select(ProfileORM)
             .where(
@@ -92,7 +104,9 @@ class ProfilesRepository(BaseRepository):
         result = await self.session.execute(query)
         return result.scalars().all()  # type: ignore[no-any-return]
 
-    async def get_by_tags(self, tags: list[str], limit: int = 100) -> Sequence[ProfileORM]:
+    async def get_by_tags(
+        self, tags: list[str], limit: int = 100
+    ) -> Sequence[ProfileORM]:
         query = (
             select(ProfileORM)
             .where(
@@ -104,7 +118,9 @@ class ProfilesRepository(BaseRepository):
         result = await self.session.execute(query)
         return result.scalars().all()  # type: ignore[no-any-return]
 
-    async def get_verified(self, limit: int = 100, offset: int = 0) -> Sequence[ProfileORM]:
+    async def get_verified(
+        self, limit: int = 100, offset: int = 0
+    ) -> Sequence[ProfileORM]:
         query = (
             select(ProfileORM)
             .where(
@@ -118,7 +134,9 @@ class ProfilesRepository(BaseRepository):
         result = await self.session.execute(query)
         return result.scalars().all()  # type: ignore[no-any-return]
 
-    async def get_top_by_monthly_listeners(self, limit: int = 100, offset: int = 0) -> Sequence[ProfileORM]:
+    async def get_top_by_monthly_listeners(
+        self, limit: int = 100, offset: int = 0
+    ) -> Sequence[ProfileORM]:
         query = (
             select(ProfileORM)
             .where(ProfileORM.deleted_at.is_(None))
@@ -129,7 +147,9 @@ class ProfilesRepository(BaseRepository):
         result = await self.session.execute(query)
         return result.scalars().all()  # type: ignore[no-any-return]
 
-    async def get_top_by_followers(self, limit: int = 100, offset: int = 0) -> Sequence[ProfileORM]:
+    async def get_top_by_followers(
+        self, limit: int = 100, offset: int = 0
+    ) -> Sequence[ProfileORM]:
         query = (
             select(ProfileORM)
             .where(ProfileORM.deleted_at.is_(None))
@@ -141,11 +161,7 @@ class ProfilesRepository(BaseRepository):
         return result.scalars().all()  # type: ignore[no-any-return]
 
     async def update_profile(self, user_id: UUID, **updates: Any) -> None:
-        stmt = (
-            update(ProfileORM)
-            .where(ProfileORM.user_id == user_id)
-            .values(**updates)
-        )
+        stmt = update(ProfileORM).where(ProfileORM.user_id == user_id).values(**updates)
         await self.session.execute(stmt)
 
     async def update_avatar(self, user_id: UUID, avatar_url: str | None) -> None:
@@ -206,7 +222,9 @@ class ProfilesRepository(BaseRepository):
         stmt = (
             update(ProfileORM)
             .where(ProfileORM.user_id == user_id)
-            .values(featured_in_releases_count=ProfileORM.featured_in_releases_count + 1)
+            .values(
+                featured_in_releases_count=ProfileORM.featured_in_releases_count + 1
+            )
         )
         await self.session.execute(stmt)
 
@@ -214,7 +232,9 @@ class ProfilesRepository(BaseRepository):
         stmt = (
             update(ProfileORM)
             .where(ProfileORM.user_id == user_id)
-            .values(featured_in_releases_count=ProfileORM.featured_in_releases_count - 1)
+            .values(
+                featured_in_releases_count=ProfileORM.featured_in_releases_count - 1
+            )
         )
         await self.session.execute(stmt)
 
@@ -239,5 +259,3 @@ class ProfilesRepository(BaseRepository):
             .values(deleted_at=None)
         )
         await self.session.execute(stmt)
-    
-    
