@@ -5,8 +5,13 @@ from sqlalchemy import select, update, insert, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from yukinoise_users.infrastructure.database.models.users_model import UserORM, UserStatus
-from yukinoise_users.infrastructure.database.repositories.base_repo import BaseRepository
+from yukinoise_users.infrastructure.database.models.users_model import (
+    UserORM,
+    UserStatus,
+)
+from yukinoise_users.infrastructure.database.repositories.base_repo import (
+    BaseRepository,
+)
 
 
 class UsersRepository(BaseRepository):
@@ -76,9 +81,13 @@ class UsersRepository(BaseRepository):
         return result.scalars().all()  # type: ignore[no-any-return]
 
     async def exists(self, user_id: UUID) -> bool:
-        query = select(func.count()).select_from(UserORM).where(
-            UserORM.id == user_id,
-            UserORM.deleted_at.is_(None),
+        query = (
+            select(func.count())
+            .select_from(UserORM)
+            .where(
+                UserORM.id == user_id,
+                UserORM.deleted_at.is_(None),
+            )
         )
         result = await self.session.execute(query)
         return (result.scalar() or 0) > 0
@@ -128,9 +137,7 @@ class UsersRepository(BaseRepository):
 
     async def update_last_login(self, user_id: UUID, timestamp: int) -> None:
         stmt = (
-            update(UserORM)
-            .where(UserORM.id == user_id)
-            .values(last_login_at=timestamp)
+            update(UserORM).where(UserORM.id == user_id).values(last_login_at=timestamp)
         )
         await self.session.execute(stmt)
 
@@ -140,9 +147,7 @@ class UsersRepository(BaseRepository):
         verified: bool,
     ) -> None:
         stmt = (
-            update(UserORM)
-            .where(UserORM.id == user_id)
-            .values(email_verified=verified)
+            update(UserORM).where(UserORM.id == user_id).values(email_verified=verified)
         )
         await self.session.execute(stmt)
 
@@ -151,11 +156,7 @@ class UsersRepository(BaseRepository):
         user_id: UUID,
         status: UserStatus,
     ) -> None:
-        stmt = (
-            update(UserORM)
-            .where(UserORM.id == user_id)
-            .values(status=status)
-        )
+        stmt = update(UserORM).where(UserORM.id == user_id).values(status=status)
         await self.session.execute(stmt)
 
     async def suspend_user(self, user_id: UUID) -> None:
@@ -168,25 +169,21 @@ class UsersRepository(BaseRepository):
         await self.update_status(user_id, UserStatus.ACTIVE)
 
     async def soft_delete(self, user_id: UUID, timestamp: int) -> None:
-        stmt = (
-            update(UserORM)
-            .where(UserORM.id == user_id)
-            .values(deleted_at=timestamp)
-        )
+        stmt = update(UserORM).where(UserORM.id == user_id).values(deleted_at=timestamp)
         await self.session.execute(stmt)
 
     async def restore(self, user_id: UUID) -> None:
-        stmt = (
-            update(UserORM)
-            .where(UserORM.id == user_id)
-            .values(deleted_at=None)
-        )
+        stmt = update(UserORM).where(UserORM.id == user_id).values(deleted_at=None)
         await self.session.execute(stmt)
 
     async def count_by_status(self, status: UserStatus) -> int:
-        query = select(func.count()).select_from(UserORM).where(
-            UserORM.status == status,
-            UserORM.deleted_at.is_(None),
+        query = (
+            select(func.count())
+            .select_from(UserORM)
+            .where(
+                UserORM.status == status,
+                UserORM.deleted_at.is_(None),
+            )
         )
         result = await self.session.execute(query)
         return result.scalar() or 0
@@ -195,10 +192,13 @@ class UsersRepository(BaseRepository):
         return await self.count_by_status(UserStatus.ACTIVE)
 
     async def count_registered_since(self, since_timestamp: int) -> int:
-        query = select(func.count()).select_from(UserORM).where(
-            UserORM.created_at >= since_timestamp,
-            UserORM.deleted_at.is_(None),
+        query = (
+            select(func.count())
+            .select_from(UserORM)
+            .where(
+                UserORM.created_at >= since_timestamp,
+                UserORM.deleted_at.is_(None),
+            )
         )
         result = await self.session.execute(query)
         return result.scalar() or 0
-

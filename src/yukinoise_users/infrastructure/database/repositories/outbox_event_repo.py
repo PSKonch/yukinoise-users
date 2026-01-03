@@ -4,8 +4,13 @@ from uuid import UUID
 from sqlalchemy import select, insert, update, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from yukinoise_users.infrastructure.database.models.outbox_event_model import OutBoxEventORM, OutBoxStatus
-from yukinoise_users.infrastructure.database.repositories.base_repo import BaseRepository
+from yukinoise_users.infrastructure.database.models.outbox_event_model import (
+    OutBoxEventORM,
+    OutBoxStatus,
+)
+from yukinoise_users.infrastructure.database.repositories.base_repo import (
+    BaseRepository,
+)
 
 
 class OutBoxEventRepository(BaseRepository):
@@ -13,7 +18,9 @@ class OutBoxEventRepository(BaseRepository):
         super().__init__(session)
         self.model = OutBoxEventORM
 
-    async def create_event(self, event_type: str, payload: dict[str, Any]) -> OutBoxEventORM:
+    async def create_event(
+        self, event_type: str, payload: dict[str, Any]
+    ) -> OutBoxEventORM:
         stmt = (
             insert(OutBoxEventORM)
             .values(event_type=event_type, payload=payload)
@@ -36,7 +43,9 @@ class OutBoxEventRepository(BaseRepository):
         stmt = (
             update(OutBoxEventORM)
             .where(OutBoxEventORM.id == event_id)
-            .values(status=OutBoxStatus.SENT, updated_at=func.extract("epoch", func.now()))
+            .values(
+                status=OutBoxStatus.SENT, updated_at=func.extract("epoch", func.now())
+            )
         )
         await self.session.execute(stmt)
 
@@ -64,11 +73,8 @@ class OutBoxEventRepository(BaseRepository):
         await self.session.execute(stmt)
 
     async def delete_event(self, event_id: UUID, older_than: int) -> None:
-        stmt = (
-            delete(OutBoxEventORM)
-            .where(
-                OutBoxEventORM.id == event_id,
-                OutBoxEventORM.updated_at < older_than,
-            )
+        stmt = delete(OutBoxEventORM).where(
+            OutBoxEventORM.id == event_id,
+            OutBoxEventORM.updated_at < older_than,
         )
         await self.session.execute(stmt)

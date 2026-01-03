@@ -8,7 +8,7 @@ from yukinoise_users.domain.value_objects import (
     UserAuditAction,
     UserChangedBy,
     OutBoxStatus,
-) 
+)
 
 
 @dataclass
@@ -43,7 +43,7 @@ class Profile:
     featured_in_releases_count: int = 0
     verified: bool = False
     updated_at: int | None = None
-    deleted_at: int | None = None 
+    deleted_at: int | None = None
 
 
 @dataclass

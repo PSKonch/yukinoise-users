@@ -8,7 +8,9 @@ from yukinoise_users.infrastructure.database.models.user_settings_model import (
     UserSettingsORM,
     UserPlaybackQuality,
 )
-from yukinoise_users.infrastructure.database.repositories.base_repo import BaseRepository
+from yukinoise_users.infrastructure.database.repositories.base_repo import (
+    BaseRepository,
+)
 
 
 class UserSettingsRepository(BaseRepository):
@@ -41,8 +43,10 @@ class UserSettingsRepository(BaseRepository):
         return result.scalars().all()  # type: ignore[no-any-return]
 
     async def exists(self, user_id: UUID) -> bool:
-        query = select(func.count()).select_from(UserSettingsORM).where(
-            UserSettingsORM.user_id == user_id
+        query = (
+            select(func.count())
+            .select_from(UserSettingsORM)
+            .where(UserSettingsORM.user_id == user_id)
         )
         result = await self.session.execute(query)
         return (result.scalar() or 0) > 0
@@ -61,7 +65,9 @@ class UserSettingsRepository(BaseRepository):
     async def set_language(self, user_id: UUID, language: str) -> None:
         await self.update_settings(user_id, language=language)
 
-    async def set_playback_quality(self, user_id: UUID, quality: UserPlaybackQuality) -> None:
+    async def set_playback_quality(
+        self, user_id: UUID, quality: UserPlaybackQuality
+    ) -> None:
         await self.update_settings(user_id, playback_quality=quality)
 
     async def set_notifications_enabled(self, user_id: UUID, enabled: bool) -> None:
@@ -73,17 +79,23 @@ class UserSettingsRepository(BaseRepository):
     async def set_data_consent(self, user_id: UUID, consent: bool) -> None:
         await self.update_settings(user_id, data_consent=consent)
 
-    async def set_privacy_settings(self, user_id: UUID, privacy: dict[str, bool]) -> None:
+    async def set_privacy_settings(
+        self, user_id: UUID, privacy: dict[str, bool]
+    ) -> None:
         await self.update_settings(user_id, privacy_settings=privacy)
 
-    async def update_privacy_setting(self, user_id: UUID, key: str, value: bool) -> None:
+    async def update_privacy_setting(
+        self, user_id: UUID, key: str, value: bool
+    ) -> None:
         settings = await self.get_by_user_id(user_id)
         if settings:
             current = settings.privacy_settings or {}
             current[key] = value
             await self.set_privacy_settings(user_id, current)
 
-    async def get_by_language(self, language: str, limit: int = 100) -> Sequence[UserSettingsORM]:
+    async def get_by_language(
+        self, language: str, limit: int = 100
+    ) -> Sequence[UserSettingsORM]:
         query = (
             select(UserSettingsORM)
             .where(UserSettingsORM.language == language)
@@ -92,7 +104,9 @@ class UserSettingsRepository(BaseRepository):
         result = await self.session.execute(query)
         return result.scalars().all()  # type: ignore[no-any-return]
 
-    async def get_with_data_consent(self, limit: int = 100, offset: int = 0) -> Sequence[UserSettingsORM]:
+    async def get_with_data_consent(
+        self, limit: int = 100, offset: int = 0
+    ) -> Sequence[UserSettingsORM]:
         query = (
             select(UserSettingsORM)
             .where(UserSettingsORM.data_consent.is_(True))
@@ -103,15 +117,19 @@ class UserSettingsRepository(BaseRepository):
         return result.scalars().all()  # type: ignore[no-any-return]
 
     async def count_by_language(self, language: str) -> int:
-        query = select(func.count()).select_from(UserSettingsORM).where(
-            UserSettingsORM.language == language
+        query = (
+            select(func.count())
+            .select_from(UserSettingsORM)
+            .where(UserSettingsORM.language == language)
         )
         result = await self.session.execute(query)
         return result.scalar() or 0
 
     async def count_with_notifications_enabled(self) -> int:
-        query = select(func.count()).select_from(UserSettingsORM).where(
-            UserSettingsORM.notifications_enabled.is_(True)
+        query = (
+            select(func.count())
+            .select_from(UserSettingsORM)
+            .where(UserSettingsORM.notifications_enabled.is_(True))
         )
         result = await self.session.execute(query)
         return result.scalar() or 0
