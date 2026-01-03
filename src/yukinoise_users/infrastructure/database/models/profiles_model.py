@@ -1,6 +1,7 @@
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy.dialects.postgresql import TSVECTOR
-from sqlalchemy import UUID, ForeignKey, Index, ARRAY, func, String
+from sqlalchemy import ForeignKey, Index, ARRAY, func, String
+import uuid
 from sqlalchemy.dialects.postgresql import JSONB
 
 from yukinoise_users.infrastructure.database.connection import Base
@@ -9,7 +10,6 @@ from yukinoise_users.infrastructure.database.connection import Base
 class ProfileORM(Base):
     __tablename__ = "profiles"
     __table_args__ = (
-        {"schema": "users"},
         Index("idx_profiles_display_name", "display_name", unique=True),
         Index("idx_profiles_search_vector", "search_vector", postgresql_using="gin"),
         Index(
@@ -17,9 +17,10 @@ class ProfileORM(Base):
         ),
         Index("idx_profiles_tags", "tags", postgresql_using="gin"),
         Index("idx_profiles_social_links", "social_links", postgresql_using="gin"),
+        {"schema": "users"},
     )
 
-    user_id: Mapped[UUID] = mapped_column(
+    user_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("users.users.id"), primary_key=True
     )
 

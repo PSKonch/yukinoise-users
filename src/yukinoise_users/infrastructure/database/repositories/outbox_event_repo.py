@@ -5,35 +5,35 @@ from sqlalchemy import select, insert, update, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from yukinoise_users.infrastructure.database.models.outbox_event_model import (
-    OutBoxEventORM,
-    OutBoxStatus,
+    OutboxEventORM,
+    OutboxStatus,
 )
 from yukinoise_users.infrastructure.database.repositories.base_repo import (
     BaseRepository,
 )
 
 
-class OutBoxEventRepository(BaseRepository):
+class OutboxEventRepository(BaseRepository):
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session)
-        self.model = OutBoxEventORM
+        self.model = OutboxEventORM
 
     async def create_event(
         self, event_type: str, payload: dict[str, Any]
-    ) -> OutBoxEventORM:
+    ) -> OutboxEventORM:
         stmt = (
-            insert(OutBoxEventORM)
+            insert(OutboxEventORM)
             .values(event_type=event_type, payload=payload)
-            .returning(OutBoxEventORM)
+            .returning(OutboxEventORM)
         )
         result = await self.session.execute(stmt)
         return result.scalar_one()
 
-    async def get_pending_events(self, limit: int = 100) -> list[OutBoxEventORM]:
+    async def get_pending_events(self, limit: int = 100) -> list[OutboxEventORM]:
         query = (
-            select(OutBoxEventORM)
-            .where(OutBoxEventORM.status == OutBoxStatus.PENDING)
-            .order_by(OutBoxEventORM.created_at)
+            select(OutboxEventORM)
+            .where(OutboxEventORM.status == OutboxStatus.PENDING)
+            .order_by(OutboxEventORM.created_at)
             .limit(limit)
         )
         result = await self.session.execute(query)
@@ -41,20 +41,20 @@ class OutBoxEventRepository(BaseRepository):
 
     async def mark_event_sent(self, event_id: UUID) -> None:
         stmt = (
-            update(OutBoxEventORM)
-            .where(OutBoxEventORM.id == event_id)
+            update(OutboxEventORM)
+            .where(OutboxEventORM.id == event_id)
             .values(
-                status=OutBoxStatus.SENT, updated_at=func.extract("epoch", func.now())
+                status=OutboxStatus.SENT, updated_at=func.extract("epoch", func.now())
             )
         )
         await self.session.execute(stmt)
 
     async def mark_event_failed(self, event_id: UUID, error: str) -> None:
         stmt = (
-            update(OutBoxEventORM)
-            .where(OutBoxEventORM.id == event_id)
+            update(OutboxEventORM)
+            .where(OutboxEventORM.id == event_id)
             .values(
-                status=OutBoxStatus.FAILED,
+                status=OutboxStatus.FAILED,
                 error=error,
                 updated_at=func.extract("epoch", func.now()),
             )
@@ -63,18 +63,23 @@ class OutBoxEventRepository(BaseRepository):
 
     async def increment_retry_count(self, event_id: UUID) -> None:
         stmt = (
-            update(OutBoxEventORM)
-            .where(OutBoxEventORM.id == event_id)
+            update(OutboxEventORM)
+            .where(OutboxEventORM.id == event_id)
             .values(
-                retry_count=OutBoxEventORM.retry_count + 1,
+                retry_count=OutboxEventORM.retry_count + 1,
                 updated_at=func.extract("epoch", func.now()),
             )
         )
         await self.session.execute(stmt)
 
-    async def delete_event(self, event_id: UUID, older_than: int) -> None:
-        stmt = delete(OutBoxEventORM).where(
-            OutBoxEventORM.id == event_id,
-            OutBoxEventORM.updated_at < older_than,
+    async def delete_event(self, event_id: UUID) -> None:
+        stmt = delete(OutboxEventORM).where(
+            OutboxEventORM.id == event_id,
+        )
+        await self.session.execute(stmt)
+
+    async def delete_events_older_than(self, timestamp: int) -> None:
+        stmt = delete(OutboxEventORM).where(
+            OutboxEventORM.updated_at < timestamp,
         )
         await self.session.execute(stmt)

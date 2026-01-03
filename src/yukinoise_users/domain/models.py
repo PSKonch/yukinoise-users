@@ -7,7 +7,7 @@ from yukinoise_users.domain.value_objects import (
     UserPlaybackQuality,
     UserAuditAction,
     UserChangedBy,
-    OutBoxStatus,
+    OutboxStatus,
 )
 
 
@@ -70,12 +70,12 @@ class UserAuditLog:
 
 
 @dataclass
-class OutBoxEvent:
+class OutboxEvent:
     id: UUID
     event_type: str
     created_at: int
     payload: dict[str, Any] = field(default_factory=dict)
     updated_at: int | None = None
-    status: OutBoxStatus = OutBoxStatus.PENDING
+    status: OutboxStatus = OutboxStatus.PENDING
     retry_count: int = 0
     error: str | None = None

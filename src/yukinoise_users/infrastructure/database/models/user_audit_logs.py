@@ -1,8 +1,9 @@
 from enum import StrEnum
 
 from sqlalchemy.orm import mapped_column, Mapped
-from sqlalchemy import UUID, ForeignKey, Index, func
+from sqlalchemy import ForeignKey, Index, func
 from sqlalchemy.dialects.postgresql import JSONB
+import uuid
 
 from yukinoise_users.infrastructure.database.connection import Base
 
@@ -24,13 +25,17 @@ class UserChangedBy(StrEnum):
 class UserAuditLogORM(Base):
     __tablename__ = "user_audit_logs"
     __table_args__ = (
-        {"schema": "users"},
         Index("idx_user_audit_logs_user_id", "user_id"),
         Index("idx_user_audit_logs_action", "action"),
+        {"schema": "users"},
     )
 
-    id: Mapped[UUID] = mapped_column(primary_key=True, default=func.gen_random_uuid())
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.users.id"), nullable=False)
+    id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, default=func.gen_random_uuid()
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.users.id"), nullable=False
+    )
     action: Mapped[UserAuditAction] = mapped_column(nullable=False)
     changed_by: Mapped[UserChangedBy] = mapped_column(nullable=False)
     timestamp: Mapped[int] = mapped_column(

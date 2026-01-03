@@ -7,12 +7,14 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from yukinoise_users.infrastructure.database.connection import Base
-from yukinoise_users.infrastructure.database.connection import async_engine
-from yukinoise_users.infrastructure.database.models.users_model import UserORM  # noqa: F401
-from yukinoise_users.infrastructure.database.models.profiles_model import ProfileORM  # noqa: F401
-from yukinoise_users.infrastructure.database.models.user_settings_model import UserSettingsORM  # noqa: F401
-from yukinoise_users.infrastructure.database.models.user_audit_logs import UserAuditLogORM  # noqa: F401
+from yukinoise_users.core.conf import settings
+
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
+
+# Use app settings for DB URL
+config.set_main_option("sqlalchemy.url", settings.database_url)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -27,7 +29,27 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+
+# Attempt to import application models to enable autogenerate. If imports
+# fail (for example in CI or when env isn't configured), leave
+# target_metadata as None so Alembic still works in offline scenarios.
+try:
+    from yukinoise_users.infrastructure.database.connection import Base  # noqa: F401
+    from yukinoise_users.infrastructure.database.models.users_model import UserORM  # noqa: F401
+    from yukinoise_users.infrastructure.database.models.profiles_model import ProfileORM  # noqa: F401
+    from yukinoise_users.infrastructure.database.models.user_settings_model import UserSettingsORM  # noqa: F401
+    from yukinoise_users.infrastructure.database.models.user_audit_logs import UserAuditLogORM  # noqa: F401
+    from yukinoise_users.infrastructure.database.models.outbox_event_model import OutboxEventORM  # noqa: F401
+
+    target_metadata = Base.metadata
+except Exception as exc:
+    import logging
+
+    logging.getLogger("alembic.env").warning(
+        "Could not import application models; autogenerate will be disabled. Import error: %s",
+        exc,
+    )
+    target_metadata = None
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -47,7 +69,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url", async_engine.url.__to_string__())
+    url = config.get_main_option("sqlalchemy.url")
+
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -71,6 +94,11 @@ async def run_async_migrations() -> None:
     and associate a connection with the context.
 
     """
+
+    if not (config.get_main_option("sqlalchemy.url")):
+        raise RuntimeError(
+            "Database URL not configured. Set the DATABASE_URL environment variable or set 'sqlalchemy.url' in alembic.ini"
+        )
 
     connectable = async_engine_from_config(
         config.get_section(config.config_ini_section, {}),

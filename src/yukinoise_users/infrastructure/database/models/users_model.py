@@ -1,7 +1,8 @@
 from enum import StrEnum
 
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import UUID, Index, func
+from sqlalchemy import Index, func
+import uuid
 
 from yukinoise_users.infrastructure.database.connection import Base
 
@@ -15,12 +16,12 @@ class UserStatus(StrEnum):
 class UserORM(Base):
     __tablename__ = "users"
     __table_args__ = (
-        {"schema": "users"},
         Index("idx_users_status", "status"),
         Index("idx_users_last_login_at", "last_login_at"),
+        {"schema": "users"},
     )
 
-    id: Mapped[UUID] = mapped_column(primary_key=True)  # No default, from Keycloak
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)  # No default, from Keycloak
 
     status: Mapped[UserStatus] = mapped_column(
         default=UserStatus.ACTIVE, nullable=False

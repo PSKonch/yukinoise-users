@@ -3,6 +3,7 @@ from enum import StrEnum
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import UUID, ForeignKey, func
 from sqlalchemy.dialects.postgresql import JSONB
+import uuid
 
 from yukinoise_users.infrastructure.database.connection import Base
 
@@ -18,7 +19,7 @@ class UserSettingsORM(Base):
     __tablename__ = "user_settings"
     __table_args__ = {"schema": "users"}
 
-    user_id: Mapped[UUID] = mapped_column(
+    user_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("users.users.id"), primary_key=True
     )
 

@@ -28,7 +28,13 @@ class UserChangedBy(StrEnum):
     SYSTEM = "system"
 
 
-class OutBoxStatus(StrEnum):
+class OutboxStatus(StrEnum):
     PENDING = "pending"
     SENT = "sent"
     FAILED = "failed"
+
+
+class StorageObject:
+    bucket: str
+    key: str
+    url: str
