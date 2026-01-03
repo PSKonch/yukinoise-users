@@ -1,4 +1,4 @@
-from typing import Protocol, Sequence, Optional, Any
+from typing import Protocol, Sequence, Any
 from uuid import UUID
 
 from yukinoise_users.domain.models import User, Profile, UserSettings, UserAuditLog
@@ -13,13 +13,13 @@ class UsersRepository(Protocol):
     async def create_from_keycloak(self, keycloak_id: UUID, email_verified: bool = False) -> User:
         ...
 
-    async def get_by_id(self, user_id: UUID) -> Optional[User]:
+    async def get_by_id(self, user_id: UUID) -> User | None:
         ...
 
-    async def get_by_id_with_profile(self, user_id: UUID) -> Optional[User]:
+    async def get_by_id_with_profile(self, user_id: UUID) -> User | None:
         ...
 
-    async def get_by_id_full(self, user_id: UUID) -> Optional[User]:
+    async def get_by_id_full(self, user_id: UUID) -> User | None:
         ...
 
     async def get_by_ids(self, user_ids: list[UUID]) -> Sequence[User]:
@@ -75,13 +75,13 @@ class ProfilesRepository(Protocol):
     async def create(self, user_id: UUID, **profile_data: Any) -> Profile:
         ...
 
-    async def get_by_user_id(self, user_id: UUID) -> Optional[Profile]:
+    async def get_by_user_id(self, user_id: UUID) -> Profile | None:
         ...
 
     async def get_by_user_ids(self, user_ids: list[UUID]) -> Sequence[Profile]:
         ...
 
-    async def get_by_display_name(self, display_name: str) -> Optional[Profile]:
+    async def get_by_display_name(self, display_name: str) -> Profile | None:
         ...
 
     async def get_by_display_name_ilike(self, pattern: str, limit: int = 100) -> Sequence[Profile]:
@@ -155,7 +155,7 @@ class ProfilesRepository(Protocol):
 
 
 class UserSettingsRepository(Protocol):
-    async def get(self, user_id: UUID) -> Optional[UserSettings]:
+    async def get(self, user_id: UUID) -> UserSettings | None:
         ...
 
     async def update(self, user_id: UUID, **updates: Any) -> None:

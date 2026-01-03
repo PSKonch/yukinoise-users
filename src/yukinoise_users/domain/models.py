@@ -1,5 +1,4 @@
-from dataclasses import dataclass
-from typing import Optional, List, Dict
+from dataclasses import dataclass, field
 from uuid import UUID
 
 from yukinoise_users.domain.value_objects import (
@@ -19,30 +18,30 @@ class User:
     updated_at: int | None = None
     last_login_at: int | None = None
     deleted_at: int | None = None
-    profile: Optional["Profile"] = None
-    settings: Optional["UserSettings"] = None
+    profile: "Profile" | None = None
+    settings: "UserSettings" | None = None
 
 
 @dataclass
 class Profile:
     user_id: UUID
     display_name: str = "anonymous"
-    bio: Optional[str] = None
-    avatar_url: Optional[str] = None
-    banner_url: Optional[str] = None
-    location: Optional[str] = None
-    social_links: Optional[Dict[str, str]] = None
-    preferred_genres: Optional[List[str]] = None
-    contact_email: Optional[str] = None
-    tags: Optional[List[str]] = None
-    monthly_listeners: Optional[int] = None
+    bio: str | None = None
+    avatar_url: str | None = None
+    banner_url: str | None = None
+    location: str | None = None
+    social_links: dict[str, str] = field(default_factory=dict)
+    preferred_genres: list[str] = field(default_factory=list)
+    contact_email: str | None = None
+    tags: list[str] = field(default_factory=list)
+    monthly_listeners: int | None = None
     followers_count: int = 0
     following_count: int = 0
     releases_count: int = 0
     featured_in_releases_count: int = 0
     verified: bool = False
     updated_at: int | None = None
-    deleted_at: int | None = None
+    deleted_at: int | None = None 
 
 
 @dataclass
@@ -54,7 +53,7 @@ class UserSettings:
     notifications_enabled: bool = True
     autoplay_enabled: bool = True
     data_consent: bool = False
-    privacy_settings: Optional[Dict[str, bool]] = None
+    privacy_settings: dict[str, bool] = field(default_factory=dict)
     updated_at: int | None = None
 
 
@@ -65,4 +64,4 @@ class UserAuditLog:
     action: UserAuditAction
     changed_by: UserChangedBy
     timestamp: int
-    details: Optional[Dict[str, str]] = None
+    details: dict[str, str] = field(default_factory=dict)
