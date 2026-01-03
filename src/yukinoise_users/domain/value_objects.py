@@ -32,3 +32,9 @@ class OutboxStatus(StrEnum):
     PENDING = "pending"
     SENT = "sent"
     FAILED = "failed"
+
+
+class StorageObject:
+    bucket: str
+    key: str
+    url: str
