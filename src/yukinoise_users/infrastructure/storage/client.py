@@ -1,4 +1,4 @@
-from typing import BinaryIO
+from typing import BinaryIO, cast
 from minio import Minio
 from minio.commonconfig import CopySource
 
@@ -17,8 +17,6 @@ class MinioStorageClient:
     async def get_file_url(self, bucket: str, file_key: str) -> bytes:
         file = await self._client.get_object(bucket, file_key)
         data = await file.read()
-        from typing import cast
-
         return cast(bytes, data)
 
     async def upload_file(
