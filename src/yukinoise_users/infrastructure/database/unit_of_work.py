@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Type, Any
+from typing import TYPE_CHECKING, Callable, Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -45,9 +45,9 @@ if TYPE_CHECKING:
 
 class UnitOfWork:
     def __init__(
-        self, session_factory: Type[async_session_factory] = async_session_factory
+        self, session_factory: Callable[[], AsyncSession] = async_session_factory
     ) -> None:
-        self._session_factory = session_factory
+        self._session_factory: Callable[[], AsyncSession] = session_factory
         self._session: AsyncSession | None = None
 
         # repository instances (private until context entered)
@@ -99,37 +99,49 @@ class UnitOfWork:
     @property
     def session(self) -> AsyncSession:
         if self._session is None:
-            raise RuntimeError("UnitOfWork has no active session")
+            raise RuntimeError(
+                "UnitOfWork repositories are unavailable outside the async context. Use 'async with UnitOfWork()' to obtain repositories."
+            )
         return self._session
 
     @property
     def users(self) -> UsersRepository:
         if self._users is None:
-            raise RuntimeError("UnitOfWork has no active session")
+            raise RuntimeError(
+                "Repository is unavailable outside UnitOfWork context. Use 'async with UnitOfWork()' to access repositories."
+            )
         return self._users
 
     @property
     def profiles(self) -> ProfilesRepository:
         if self._profiles is None:
-            raise RuntimeError("UnitOfWork has no active session")
+            raise RuntimeError(
+                "Repository is unavailable outside UnitOfWork context. Use 'async with UnitOfWork()' to access repositories."
+            )
         return self._profiles
 
     @property
     def settings(self) -> UserSettingsRepository:
         if self._settings is None:
-            raise RuntimeError("UnitOfWork has no active session")
+            raise RuntimeError(
+                "Repository is unavailable outside UnitOfWork context. Use 'async with UnitOfWork()' to access repositories."
+            )
         return self._settings
 
     @property
     def audit_logs(self) -> UserAuditLogsRepository:
         if self._audit_logs is None:
-            raise RuntimeError("UnitOfWork has no active session")
+            raise RuntimeError(
+                "Repository is unavailable outside UnitOfWork context. Use 'async with UnitOfWork()' to access repositories."
+            )
         return self._audit_logs
 
     @property
     def outbox(self) -> OutboxRepository:
         if self._outbox is None:
-            raise RuntimeError("UnitOfWork has no active session")
+            raise RuntimeError(
+                "Repository is unavailable outside UnitOfWork context. Use 'async with UnitOfWork()' to access repositories."
+            )
         return self._outbox
 
     async def commit(self) -> None:

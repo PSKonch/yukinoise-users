@@ -38,7 +38,7 @@ try:
     from yukinoise_users.infrastructure.database.models.users_model import UserORM  # noqa: F401
     from yukinoise_users.infrastructure.database.models.profiles_model import ProfileORM  # noqa: F401
     from yukinoise_users.infrastructure.database.models.user_settings_model import UserSettingsORM  # noqa: F401
-    from infrastructure.database.models.user_audit_logs_model import UserAuditLogORM  # noqa: F401
+    from yukinoise_users.infrastructure.database.models.user_audit_logs_model import UserAuditLogORM  # noqa: F401
     from yukinoise_users.infrastructure.database.models.outbox_event_model import OutboxEventORM  # noqa: F401
 
     target_metadata = Base.metadata
