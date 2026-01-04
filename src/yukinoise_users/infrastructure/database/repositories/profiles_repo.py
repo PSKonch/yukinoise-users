@@ -4,6 +4,12 @@ from uuid import UUID
 from sqlalchemy import select, update, insert, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from typing import Any, Sequence
+from uuid import UUID
+
+from sqlalchemy import select, update, insert, func
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from yukinoise_users.infrastructure.database.models.profiles_model import ProfileORM
 from yukinoise_users.infrastructure.database.repositories.base_repo import (
     BaseRepository,

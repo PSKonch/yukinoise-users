@@ -1,10 +1,10 @@
-from typing import Sequence, List, cast
+from typing import Sequence
 from uuid import UUID
 
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from yukinoise_users.infrastructure.database.models.user_audit_logs import (
+from yukinoise_users.infrastructure.database.models.user_audit_logs_model import (
     UserAuditLogORM,
     UserAuditAction,
     UserChangedBy,
@@ -51,7 +51,7 @@ class UserAuditLogsRepository(BaseRepository):
             .limit(limit)
         )
         result = await self.session.execute(query)
-        return cast(List[UserAuditLogORM], result.scalars().all())
+        return result.scalars().all()  # type: ignore[no-any-return]
 
     async def list_by_action(
         self,
@@ -67,7 +67,7 @@ class UserAuditLogsRepository(BaseRepository):
             .offset(offset)
         )
         result = await self.session.execute(query)
-        return cast(List[UserAuditLogORM], result.scalars().all())
+        return result.scalars().all()  # type: ignore[no-any-return]
 
     async def list_by_changed_by(
         self,
@@ -83,7 +83,7 @@ class UserAuditLogsRepository(BaseRepository):
             .offset(offset)
         )
         result = await self.session.execute(query)
-        return cast(List[UserAuditLogORM], result.scalars().all())
+        return result.scalars().all()  # type: ignore[no-any-return]
 
     async def list_since(
         self,
@@ -97,7 +97,7 @@ class UserAuditLogsRepository(BaseRepository):
             .limit(limit)
         )
         result = await self.session.execute(query)
-        return cast(List[UserAuditLogORM], result.scalars().all())
+        return result.scalars().all()  # type: ignore[no-any-return]
 
     async def get_user_logins(
         self,
@@ -114,4 +114,4 @@ class UserAuditLogsRepository(BaseRepository):
             .limit(limit)
         )
         result = await self.session.execute(query)
-        return cast(List[UserAuditLogORM], result.scalars().all())
+        return result.scalars().all()  # type: ignore[no-any-return]

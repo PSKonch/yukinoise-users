@@ -1,12 +1,10 @@
 import asyncio
 import time
-from uuid import UUID
 import logging
-from typing import Any
 
 from yukinoise_users.domain.repositories import OutboxRepository
-from yukinoise_users.domain.events import DomainEvent, EventType
 from yukinoise_users.infrastructure.events.producer import RabbitMQEventProducer
+from yukinoise_users.infrastructure.mapping.outbox_mapper import outbox_to_domain
 
 
 logger = logging.getLogger(__name__)
@@ -38,7 +36,7 @@ class OutboxProcessor:
 
         for event in events:
             try:
-                domain_event = self._convert_to_domain_event(event)
+                domain_event = outbox_to_domain(event)
 
                 await self._event_producer.publish(domain_event)
 
@@ -60,26 +58,6 @@ class OutboxProcessor:
                     )
 
         return processed_count
-
-    def _convert_to_domain_event(self, outbox_event: Any) -> DomainEvent:
-        try:
-            event_type = EventType(outbox_event.event_type)
-        except ValueError:
-            event_type = EventType.USER_UPDATED
-
-        aggregate_id = outbox_event.payload.get("user_id")
-        if aggregate_id:
-            aggregate_id = (
-                UUID(aggregate_id) if isinstance(aggregate_id, str) else aggregate_id
-            )
-        else:
-            aggregate_id = outbox_event.id
-
-        return DomainEvent(
-            event_type=event_type,
-            aggregate_id=aggregate_id,
-            payload=outbox_event.payload,
-        )
 
     async def start(self, interval_seconds: float = 5.0) -> None:
         self._running = True

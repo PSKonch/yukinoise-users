@@ -55,6 +55,7 @@ __all__ = [
     "UserSettingsRepository",
     "UserAuditLogsRepository",
     "OutboxRepository",
+    "UnitOfWork",
     # Value Objects
     "UserStatus",
     "UserPlaybackQuality",
